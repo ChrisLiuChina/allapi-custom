@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/QuantumNous/new-api/logger"
+	"github.com/QuantumNous/new-api/model"
 	relaycommon "github.com/QuantumNous/new-api/relay/common"
 	"github.com/QuantumNous/new-api/types"
 	"github.com/gin-gonic/gin"
@@ -74,6 +75,9 @@ func SettleBilling(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, actualQuo
 		if err := relayInfo.Billing.Settle(actualQuota); err != nil {
 			return err
 		}
+		if err := grantAffiliateCommission(relayInfo, actualQuota); err != nil {
+			return err
+		}
 
 		// 发送额度通知（订阅计费使用订阅剩余额度）
 		if actualQuota != 0 {
@@ -89,7 +93,24 @@ func SettleBilling(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, actualQuo
 	// 回退：无 BillingSession 时使用旧路径
 	quotaDelta := actualQuota - relayInfo.FinalPreConsumedQuota
 	if quotaDelta != 0 {
-		return PostConsumeQuota(relayInfo, quotaDelta, relayInfo.FinalPreConsumedQuota, true)
+		if err := PostConsumeQuota(relayInfo, quotaDelta, relayInfo.FinalPreConsumedQuota, true); err != nil {
+			return err
+		}
+	}
+	return grantAffiliateCommission(relayInfo, actualQuota)
+}
+
+// grantAffiliateCommission runs only after a request has reached its final,
+// successful settlement. It deliberately uses actualQuota rather than a
+// pre-consumed amount, so refunds and negative adjustments never earn a
+// commission.
+func grantAffiliateCommission(relayInfo *relaycommon.RelayInfo, actualQuota int) error {
+	if relayInfo == nil || actualQuota <= 0 || relayInfo.RequestId == "" {
+		return nil
+	}
+	_, _, err := model.RecordAffiliateCommission(relayInfo.UserId, relayInfo.RequestId, actualQuota)
+	if err != nil {
+		return fmt.Errorf("record affiliate commission: %w", err)
 	}
 	return nil
 }

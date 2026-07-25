@@ -25,7 +25,7 @@ import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth-store'
 
 import { useDashboardContentVisibility } from '../../hooks/use-status-data'
-import { AnnouncementsPanel } from './announcements-panel'
+import { AnnouncementBanner } from './announcement-banner'
 import { ApiInfoPanel } from './api-info-panel'
 import { FAQPanel } from './faq-panel'
 import { PerformanceHealthPanel } from './performance-health-panel'
@@ -36,18 +36,18 @@ export function OverviewDashboard() {
   const user = useAuthStore((state) => state.auth.user)
   const {
     apiInfo: showApiInfoPanel,
-    announcements: showAnnouncementsPanel,
     faq: showFAQPanel,
     uptimeKuma: showUptimePanel,
   } = useDashboardContentVisibility()
   const isAdmin = Boolean(user?.role && user.role >= ROLE.ADMIN)
   const showLeftContentPanels =
-    isAdmin || showApiInfoPanel || showAnnouncementsPanel || showFAQPanel
+    isAdmin || showApiInfoPanel || showFAQPanel
   const showContentPanels = showLeftContentPanels || showUptimePanel
 
   return (
     <div className='flex flex-col gap-4'>
       <SummaryCards />
+      <AnnouncementBanner />
 
       {showContentPanels && (
         <CardStaggerContainer
@@ -62,7 +62,7 @@ export function OverviewDashboard() {
             <div
               className={cn(
                 'grid min-w-0 grid-cols-1 gap-4',
-                (showApiInfoPanel || showAnnouncementsPanel || showFAQPanel) &&
+                (showApiInfoPanel || showFAQPanel) &&
                   'lg:grid-cols-2'
               )}
             >
@@ -74,11 +74,6 @@ export function OverviewDashboard() {
               {showApiInfoPanel && (
                 <CardStaggerItem>
                   <ApiInfoPanel />
-                </CardStaggerItem>
-              )}
-              {showAnnouncementsPanel && (
-                <CardStaggerItem>
-                  <AnnouncementsPanel />
                 </CardStaggerItem>
               )}
               {showFAQPanel && (

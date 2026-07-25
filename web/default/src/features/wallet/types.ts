@@ -41,6 +41,7 @@ export type PaymentResponse = ApiResponse<Record<string, unknown>> & {
 export type StripePaymentResponse = ApiResponse<{ pay_link: string }>
 export type AffiliateCodeResponse = ApiResponse<string>
 export type AffiliateTransferResponse = ApiResponse
+export type ReferralSummaryResponse = ApiResponse<ReferralSummary>
 export type CreemPaymentResponse = ApiResponse<{ checkout_url: string }>
 export type WaffoPaymentResponse = ApiResponse<
   { payment_url?: string } | string
@@ -242,6 +243,17 @@ export interface UserWalletData {
   aff_count: number
   /** User group */
   group: string
+}
+
+export interface ReferralSummary {
+  invitee_count: number
+  total_commission_quota: number
+  invitees: Array<{
+    username: string
+    created_at: number
+    status: number
+    commission_quota: number
+  }>
 }
 
 /**

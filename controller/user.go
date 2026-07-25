@@ -460,6 +460,15 @@ func GetAffCode(c *gin.Context) {
 	return
 }
 
+func GetReferralSummary(c *gin.Context) {
+	summary, err := model.GetReferralSummary(c.GetInt("id"))
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	common.ApiSuccess(c, summary)
+}
+
 func GetSelf(c *gin.Context) {
 	id := c.GetInt("id")
 	userRole := c.GetInt("role")

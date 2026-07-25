@@ -31,6 +31,7 @@ import type {
   StripePaymentResponse,
   AffiliateCodeResponse,
   AffiliateTransferResponse,
+  ReferralSummaryResponse,
   BillingHistoryResponse,
   CompleteOrderRequest,
   CreemPaymentRequest,
@@ -50,6 +51,11 @@ import type {
  */
 export function isApiSuccess(response: ApiResponse): boolean {
   return response.success === true || response.message === 'success'
+}
+
+export async function getReferralSummary(): Promise<ReferralSummaryResponse> {
+  const res = await api.get('/api/user/referrals')
+  return res.data
 }
 
 /**

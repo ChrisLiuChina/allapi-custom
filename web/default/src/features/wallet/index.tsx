@@ -96,6 +96,7 @@ export function Wallet(props: WalletProps) {
   const {
     affiliateLink,
     loading: affiliateLoading,
+    referralSummary,
     transferQuota,
     transferring,
   } = useAffiliate()
@@ -317,12 +318,8 @@ export function Wallet(props: WalletProps) {
             </div>
 
             <AffiliateRewardsCard
-              user={user}
+              referralSummary={referralSummary}
               affiliateLink={affiliateLink}
-              onTransfer={() => setTransferDialogOpen(true)}
-              complianceConfirmed={
-                topupInfo?.payment_compliance_confirmed !== false
-              }
               loading={affiliateLoading}
             />
           </div>
