@@ -615,6 +615,45 @@ type Stat struct {
 	Tpm   int `json:"tpm"`
 }
 
+// UserUsageSummary is an admin-only aggregate of successful API usage. It
+// intentionally exposes operational totals only, not request contents or keys.
+type UserUsageSummary struct {
+	UserId       int    `json:"user_id"`
+	Username     string `json:"username"`
+	RequestCount int    `json:"request_count"`
+	Quota        int    `json:"quota"`
+	TokenCount   int    `json:"token_count"`
+}
+
+func GetUserUsageSummary(startTimestamp int64, endTimestamp int64, modelName string, channel int, group string) ([]UserUsageSummary, error) {
+	items := make([]UserUsageSummary, 0)
+	tx := LOG_DB.Table("logs").
+		Select("user_id, username, COUNT(*) AS request_count, COALESCE(SUM(quota), 0) AS quota, COALESCE(SUM(prompt_tokens), 0) + COALESCE(SUM(completion_tokens), 0) AS token_count").
+		Where("type = ?", LogTypeConsume)
+	if startTimestamp != 0 {
+		tx = tx.Where("created_at >= ?", startTimestamp)
+	}
+	if endTimestamp != 0 {
+		tx = tx.Where("created_at <= ?", endTimestamp)
+	}
+	if modelName != "" {
+		var err error
+		if tx, err = applyExplicitLogTextFilter(tx, "model_name", modelName); err != nil {
+			return nil, err
+		}
+	}
+	if channel != 0 {
+		tx = tx.Where("channel_id = ?", channel)
+	}
+	if group != "" {
+		tx = tx.Where(logGroupCol+" = ?", group)
+	}
+	if err := tx.Group("user_id, username").Order("quota DESC, username ASC").Limit(500).Scan(&items).Error; err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 func SumUsedQuota(logType int, startTimestamp int64, endTimestamp int64, modelName string, username string, tokenName string, channel int, group string) (stat Stat, err error) {
 	tx := LOG_DB.Table("logs").Select("COALESCE(sum(quota), 0) quota")
 

@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { getRouteApi, useNavigate } from '@tanstack/react-router'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { SectionPageLayout } from '@/components/layout'
@@ -34,6 +34,7 @@ import {
   useUsageLogsContext,
 } from './components/usage-logs-provider'
 import { UsageLogsTable } from './components/usage-logs-table'
+import { UserUsageSummaryTable } from './components/user-usage-summary'
 import {
   isUsageLogsSectionId,
   USAGE_LOGS_DEFAULT_SECTION,
@@ -72,6 +73,7 @@ function UsageLogsContent() {
     setAffinityDialogOpen,
   } = useUsageLogsContext()
   const { canManageScope, viewScope, setViewScope } = useLogsViewScope()
+  const [displayMode, setDisplayMode] = useState<'logs' | 'users'>('logs')
   const tabNavGroups = useMemo<NavGroup[]>(
     () => [
       {
@@ -151,8 +153,20 @@ function UsageLogsContent() {
                 </TabsList>
               </Tabs>
             )}
+            {canManageScope && viewScope === 'all' && activeCategory === 'common' && (
+              <Tabs value={displayMode} onValueChange={(value) => setDisplayMode(value as 'logs' | 'users')}>
+                <TabsList>
+                  <TabsTrigger value='logs'>{t('Log Details')}</TabsTrigger>
+                  <TabsTrigger value='users'>{t('Usage by User')}</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            )}
             <div className='min-h-0 flex-1'>
-              <UsageLogsTable logCategory={activeCategory} />
+              {displayMode === 'users' && canManageScope && viewScope === 'all' && activeCategory === 'common' ? (
+                <UserUsageSummaryTable />
+              ) : (
+                <UsageLogsTable logCategory={activeCategory} />
+              )}
             </div>
           </div>
         </SectionPageLayout.Content>

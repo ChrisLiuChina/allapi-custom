@@ -244,6 +244,14 @@ export interface LogStatistics {
   tpm: number
 }
 
+export interface UserUsageSummary {
+  user_id: number
+  username: string
+  request_count: number
+  quota: number
+  token_count: number
+}
+
 // ============================================================================
 // Drawing Logs (MjProxy) Types
 // ============================================================================
