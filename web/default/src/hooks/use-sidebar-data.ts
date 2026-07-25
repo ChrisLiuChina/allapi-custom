@@ -104,11 +104,6 @@ export function useSidebarData(): SidebarData {
         title: t('Personal'),
         items: [
           {
-            title: t('Redemption Center'),
-            url: '/redemption',
-            icon: Ticket,
-          },
-          {
             title: t('Wallet'),
             url: '/wallet',
             icon: Wallet,
@@ -138,11 +133,6 @@ export function useSidebarData(): SidebarData {
             title: t('Users'),
             url: '/users',
             icon: Users,
-          },
-          {
-            title: t('Redemption Codes'),
-            url: '/redemption-codes',
-            icon: Ticket,
           },
           {
             title: t('Subscriptions'),

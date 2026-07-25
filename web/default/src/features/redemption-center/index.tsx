@@ -10,7 +10,7 @@ import { useRedemption } from '@/features/wallet/hooks/use-redemption'
 
 const SHOP_URL = 'https://pay.ldxp.cn/shop/S1D8STZR'
 
-export function RedemptionCenter() {
+export function RedemptionCenterContent(props: { onRedeemed?: () => void }) {
   const { t } = useTranslation()
   const [redemptionCode, setRedemptionCode] = useState('')
   const { redeeming, redeemCode } = useRedemption()
@@ -19,14 +19,12 @@ export function RedemptionCenter() {
     const success = await redeemCode(redemptionCode)
     if (success) {
       setRedemptionCode('')
+      props.onRedeemed?.()
     }
   }
 
   return (
-    <SectionPageLayout>
-      <SectionPageLayout.Title>{t('Redemption Center')}</SectionPageLayout.Title>
-      <SectionPageLayout.Content>
-        <div className='mx-auto flex w-full max-w-3xl flex-col gap-4 sm:gap-5'>
+    <div className='flex w-full flex-col gap-4 sm:gap-5'>
           <TitledCard
             title={t('Buy redemption code')}
             description={t('Purchase a redemption code in the store, then return here to add it to your account.')}
@@ -71,6 +69,18 @@ export function RedemptionCenter() {
               </Button>
             </div>
           </TitledCard>
+    </div>
+  )
+}
+
+export function RedemptionCenter() {
+  const { t } = useTranslation()
+  return (
+    <SectionPageLayout>
+      <SectionPageLayout.Title>{t('Redemption Center')}</SectionPageLayout.Title>
+      <SectionPageLayout.Content>
+        <div className='mx-auto flex w-full max-w-3xl flex-col'>
+          <RedemptionCenterContent />
         </div>
       </SectionPageLayout.Content>
     </SectionPageLayout>

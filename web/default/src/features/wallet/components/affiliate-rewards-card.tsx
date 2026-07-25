@@ -67,9 +67,7 @@ export function AffiliateRewardsCard({
               {t('Referral Program')}
             </h3>
             <p className='text-muted-foreground line-clamp-1 text-xs'>
-              {t(
-                'Earn 10% of each invited user’s successful API charge. Commission is credited directly to your balance.'
-              )}
+              推荐返利：好友每次成功使用 API，你将获得其实付额度的 10%，佣金直接到账。
             </p>
           </div>
         </div>
