@@ -146,7 +146,6 @@ export function Hero(props: HeroProps) {
                   {t('Go to Dashboard')}
                   <ArrowRight className='ml-2 size-5 transition-transform duration-200 group-hover:translate-x-0.5' />
                 </Button>
-                {renderDocsButton()}
               </>
             ) : (
               <>
