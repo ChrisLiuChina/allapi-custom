@@ -1,7 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
-
-import { RedemptionCenter } from '@/features/redemption-center'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_authenticated/redemption/')({
-  component: RedemptionCenter,
+  beforeLoad: () => {
+    throw redirect({ to: '/wallet' })
+  },
 })

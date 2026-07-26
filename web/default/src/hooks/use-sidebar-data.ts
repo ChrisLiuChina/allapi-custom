@@ -29,7 +29,6 @@ import {
   Radio,
   ServerCog,
   Settings,
-  Ticket,
   User,
   Users,
   Wallet,
